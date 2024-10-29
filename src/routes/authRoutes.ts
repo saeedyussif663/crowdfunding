@@ -6,7 +6,6 @@ import {
   signin,
   signup,
 } from "../controllers/authController";
-import isAuthenticated from "../middleware/isAuthenticated";
 
 const authRoutes = Router();
 
