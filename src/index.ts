@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { DBconnect } from "./lib";
+import { DBconnect } from "./lib/db-connection";
 import { User } from "./models/usersModel";
 import authRoutes from "./routes/authRoutes";
 
