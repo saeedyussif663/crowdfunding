@@ -23,12 +23,10 @@ export async function signup(req: Request, res: Response) {
 
   if (existingUser) {
     res.status(422).json({ message: "A user with the email already exists" });
-    return;
   }
 
   if (!password) {
     res.status(422).json({ message: "Password is required" });
-    return;
   }
 
   const hasedPassword = await bcrypt.hash(password, 10);
@@ -44,16 +42,13 @@ export async function signup(req: Request, res: Response) {
     res
       .status(201)
       .json({ message: "User created successfully", data: newUser });
-    return;
   } catch (error: any) {
     if (error.name === "ValidationError") {
       res
         .status(422)
         .json({ message: error.message.split(":").slice(2).join(":").trim() });
-      return;
     }
     res.status(500).json({ message: "An error occured" });
-    return;
   }
 }
 
@@ -62,7 +57,6 @@ export async function signin(req: Request, res: Response) {
 
   if (!email || !password) {
     res.status(422).json({ message: "Email and Password are required" });
-    return;
   }
 
   const user = await User.findOne({ email });
@@ -76,7 +70,6 @@ export async function signin(req: Request, res: Response) {
 
   if (!passwordMatch) {
     res.status(401).json({ message: "Invalid credentials" });
-    return;
   }
 
   const accessToken = jwt.sign({ userId: user._id }, accesstoken_secret, {
@@ -91,7 +84,6 @@ export async function signin(req: Request, res: Response) {
     accessToken,
     refreshToken,
   });
-  return;
 }
 
 export function refreshToken(req: Request, res: Response) {
@@ -127,11 +119,9 @@ export function refreshToken(req: Request, res: Response) {
       error instanceof JsonWebTokenError
     ) {
       res.status(401).json({ message: "Invalid token" });
-      return;
     }
 
     res.status(500).json({ message: "An error occured" });
-    return;
   }
 }
 
@@ -139,7 +129,6 @@ export async function forgotPassword(req: Request, res: Response) {
   const { email } = req.body;
   if (!email) {
     res.status(422).json({ message: "Email is required" });
-    return;
   }
 
   const user = await User.findOne({ email });
@@ -154,7 +143,6 @@ export async function forgotPassword(req: Request, res: Response) {
   });
 
   res.status(200).json({ token });
-  return;
 }
 
 export async function setPassword(req: Request, res: Response) {
@@ -162,12 +150,10 @@ export async function setPassword(req: Request, res: Response) {
 
   if (!token || !password) {
     res.status(422).json({ message: "Token and passwod required" });
-    return;
   }
 
   if (!(password === confirmPassword)) {
     res.status(422).json({ message: "Passwords don't match" });
-    return;
   }
 
   try {
@@ -180,17 +166,14 @@ export async function setPassword(req: Request, res: Response) {
 
     console.log(updatedUser);
     res.status(200).json({ message: "Password reset successfully" });
-    return;
   } catch (error) {
     if (
       error instanceof TokenExpiredError ||
       error instanceof JsonWebTokenError
     ) {
       res.status(401).json({ message: "Invalid token" });
-      return;
     }
 
     res.status(500).json({ message: "An error occured" });
-    return;
   }
 }
