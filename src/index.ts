@@ -4,6 +4,7 @@ import { DBconnect } from "./lib/db-connection";
 import authRoutes from "./routes/authRoutes";
 import isAuthenticated from "./middleware/isAuthenticated";
 import { User } from "./models/usersModel";
+import campaignRoutes from "./routes/campaignRoutes";
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ app.get("/", (req: Request, res: Response) => {
 // auth routes
 app.use("/api/auth/", authRoutes);
 
+// campaigns route
+app.use("/api/campaign/", campaignRoutes);
+
 // get user - protected
 app.get(
   "/api/user/me",
@@ -26,11 +30,9 @@ app.get(
   async (req: Request, res: Response) => {
     const Id = req.user?.userId;
     const user = await User.findOne({ _id: Id });
-    res
-      .status(200)
-      .json({
-        user: { email: user?.email, name: user?.name, phone: user?.phone },
-      });
+    res.status(200).json({
+      user: { email: user?.email, name: user?.name, phone: user?.phone },
+    });
     return;
   }
 );
