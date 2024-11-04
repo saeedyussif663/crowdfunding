@@ -42,15 +42,26 @@ export async function editCampaign(req: Request, res: Response) {
   }
 
   try {
-    const updatedCampaign = await Campaign.findByIdAndUpdate(
-      { _id: id },
-      req.body,
-      { new: true }
-    );
+    const campaign = await Campaign.findOne({ _id: id });
 
-    res.status(200).json({
+    if (!campaign) {
+      res.status(404).json({ message: "campaign not found" });
+      return;
+    }
+  } catch (error: any) {
+    if (error.name === "CastError") {
+      res.status(404).json({ message: "campaign not found" });
+      return;
+    }
+    res.status(500).json({ message: "An error occured" });
+    return;
+  }
+
+  try {
+    await Campaign.updateOne({ _id: id }, req.body);
+
+    res.status(204).json({
       message: "updated campaign successfully",
-      data: updatedCampaign,
     });
     return;
   } catch (error: any) {
@@ -61,8 +72,30 @@ export async function editCampaign(req: Request, res: Response) {
       return;
     }
 
-    console.log({ error });
     res.status(500).json({ message: "An error occured" });
     return;
+  }
+}
+
+export async function deleteCampaing(req: Request, res: Response) {
+  const id = req.params.id;
+
+  try {
+    const campaign = await Campaign.findById({ _id: id });
+  } catch (error: any) {
+    if (error.name === "CastError") {
+      res.status(404).json({ message: "campaign not found" });
+      return;
+    }
+    res.status(500).json({ message: "An error occured" });
+    return;
+  }
+
+  try {
+    await Campaign.deleteOne({ _id: id });
+    res.status(204);
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "an error occured" });
   }
 }

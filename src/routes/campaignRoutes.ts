@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import {
   createCampaign,
+  deleteCampaing,
   editCampaign,
 } from "../controllers/campaignController";
 
@@ -15,5 +16,8 @@ campaignRoutes.post("/create", createCampaign);
 
 // edit a campaign
 campaignRoutes.put("/edit/:id", editCampaign);
+
+// delete a campaign
+campaignRoutes.delete("/delete/:id", deleteCampaing);
 
 export default campaignRoutes;

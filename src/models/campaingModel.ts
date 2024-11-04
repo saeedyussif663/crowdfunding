@@ -28,6 +28,10 @@ const campaignsSchema = new Schema(
       enum: ["active", "completed", "cancelled"],
       default: "active",
     },
+    currentAmount: {
+      type: Number,
+      default: 0,
+    },
     category: {
       type: String,
       required: [true, "Category is required"],
