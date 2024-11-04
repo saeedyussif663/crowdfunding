@@ -3,13 +3,17 @@ import {
   createCampaign,
   deleteCampaing,
   editCampaign,
+  getACampaign,
+  getAllCampaigns,
 } from "../controllers/campaignController";
 
 const campaignRoutes = Router();
 
-campaignRoutes.get("/", (req: Request, res: Response) => {
-  res.send("get all campaigns");
-});
+// get all campaigns
+campaignRoutes.get("/", getAllCampaigns);
+
+// get a campaign
+campaignRoutes.get("/:id", getACampaign);
 
 // create a campaign
 campaignRoutes.post("/create", createCampaign);
