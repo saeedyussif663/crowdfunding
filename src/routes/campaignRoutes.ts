@@ -6,6 +6,7 @@ import {
   getACampaign,
   getAllCampaigns,
 } from "../controllers/campaignController";
+import isAuthenticated from "../middleware/isAuthenticated";
 
 const campaignRoutes = Router();
 
@@ -13,15 +14,15 @@ const campaignRoutes = Router();
 campaignRoutes.get("/", getAllCampaigns);
 
 // get a campaign
-campaignRoutes.get("/:id", getACampaign);
+campaignRoutes.get("/:id", isAuthenticated, getACampaign);
 
 // create a campaign
-campaignRoutes.post("/create", createCampaign);
+campaignRoutes.post("/create", isAuthenticated, createCampaign);
 
 // edit a campaign
-campaignRoutes.put("/edit/:id", editCampaign);
+campaignRoutes.put("/edit/:id", isAuthenticated, editCampaign);
 
 // delete a campaign
-campaignRoutes.delete("/delete/:id", deleteCampaing);
+campaignRoutes.delete("/delete/:id", isAuthenticated, deleteCampaing);
 
 export default campaignRoutes;

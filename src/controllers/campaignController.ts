@@ -73,8 +73,8 @@ export async function getACampaign(req: Request, res: Response) {
 }
 
 export async function createCampaign(req: Request, res: Response) {
-  const { title, description, amountExpected, imageUrl, creator, category } =
-    req.body;
+  const { title, description, amountExpected, imageUrl, category } = req.body;
+  const creator = req.user?.userId;
 
   try {
     const campaign = await Campaign.create({
@@ -86,9 +86,21 @@ export async function createCampaign(req: Request, res: Response) {
       category,
     });
 
-    res
-      .status(201)
-      .json({ message: "campaing created successfully", data: campaign });
+    res.status(201).json({
+      message: "campaing created successfully",
+      data: {
+        id: campaign._id,
+        title: campaign?.title,
+        description: campaign?.description,
+        amountExpected: campaign?.amountExpected,
+        imageUrl: campaign?.imageUrl,
+        creator: campaign?.creator,
+        category: campaign?.category,
+        status: campaign?.status,
+        contributors: campaign?.contributors,
+        currentAmount: campaign?.currentAmount,
+      },
+    });
   } catch (error: any) {
     if (error.name === "ValidationError") {
       res
@@ -104,6 +116,7 @@ export async function createCampaign(req: Request, res: Response) {
 export async function editCampaign(req: Request, res: Response) {
   const id = req.params.id;
   const status = req.body.status;
+  const user = req.user?.userId;
 
   if (status !== "active" && status !== "cancelled" && status !== "completed") {
     res.status(422).json({
@@ -114,6 +127,11 @@ export async function editCampaign(req: Request, res: Response) {
 
   try {
     const campaign = await Campaign.findOne({ _id: id });
+
+    if (campaign?.creator?.toString() !== user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
 
     if (!campaign) {
       res.status(404).json({ message: "campaign not found" });
@@ -150,9 +168,14 @@ export async function editCampaign(req: Request, res: Response) {
 
 export async function deleteCampaing(req: Request, res: Response) {
   const id = req.params.id;
+  const user = req.user?.userId;
 
   try {
     const campaign = await Campaign.findById({ _id: id });
+    if (campaign?.creator?.toString() !== user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
   } catch (error: any) {
     if (error.name === "CastError") {
       res.status(404).json({ message: "campaign not found" });

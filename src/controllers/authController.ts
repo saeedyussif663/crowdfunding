@@ -47,7 +47,6 @@ export async function signup(req: Request, res: Response) {
         name: newUser.name,
         email: newUser.email,
         phone: newUser.phone,
-        id: newUser._id,
       },
     });
   } catch (error: any) {
