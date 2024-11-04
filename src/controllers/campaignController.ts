@@ -118,13 +118,6 @@ export async function editCampaign(req: Request, res: Response) {
   const status = req.body.status;
   const user = req.user?.userId;
 
-  if (status !== "active" && status !== "cancelled" && status !== "completed") {
-    res.status(422).json({
-      message: "status should either be active, cancelled or completed",
-    });
-    return;
-  }
-
   try {
     const campaign = await Campaign.findOne({ _id: id });
 
@@ -147,7 +140,7 @@ export async function editCampaign(req: Request, res: Response) {
   }
 
   try {
-    await Campaign.updateOne({ _id: id }, req.body);
+    await Campaign.updateOne({ _id: id }, req.body, { runValidators: true });
 
     res.status(204).json({
       message: "updated campaign successfully",
