@@ -7,6 +7,7 @@ import jwt, {
 } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { User } from "../models/usersModel";
+import sendEmail from "../lib/sendEmail";
 
 dotenv.config();
 const accesstoken_secret = process.env.ACCESS_TOKEN_SECRET as string;
@@ -17,7 +18,7 @@ const resettoken_secret = process.env.RESET_PASSWORD_SECRET as string;
 const resettoken_duration = process.env.RESET_PASSWORD_DURATION;
 
 export async function signup(req: Request, res: Response) {
-  const { email, name, phone, password } = req.body;
+  const { email, name, password } = req.body;
 
   const existingUser = await User.findOne({ email });
 
@@ -37,7 +38,6 @@ export async function signup(req: Request, res: Response) {
     const newUser = await User.create({
       name,
       email,
-      phone,
       password: hasedPassword,
     });
 
@@ -46,9 +46,12 @@ export async function signup(req: Request, res: Response) {
       data: {
         name: newUser.name,
         email: newUser.email,
-        phone: newUser.phone,
       },
     });
+
+    sendEmail(newUser.name, newUser.email);
+
+    return;
   } catch (error: any) {
     if (error.name === "ValidationError") {
       res
@@ -91,7 +94,7 @@ export async function signin(req: Request, res: Response) {
   });
 
   res.status(200).json({
-    user: { email: user.email, name: user.name, phone: user.phone },
+    user: { email: user.email, name: user.name },
     accessToken,
     refreshToken,
   });
@@ -164,19 +167,10 @@ export async function forgotPassword(req: Request, res: Response) {
 }
 
 export async function setPassword(req: Request, res: Response) {
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
   const { token, password, confirmPassword } = req.body;
 
   if (!token || !password) {
     res.status(422).json({ message: "Token and passwod required" });
-    return;
-  }
-
-  if (!passwordRegex.test(password)) {
-    res.status(422).json({
-      message:
-        "Password must include uppercase, lowercase, number, and special character and at least 8 characters",
-    });
     return;
   }
 
@@ -189,9 +183,13 @@ export async function setPassword(req: Request, res: Response) {
     const isTokenValid = jwt.verify(token, resettoken_secret) as JwtPayload;
     const hasedPassword = await bcrypt.hash(password, 10);
 
-    const updatedUser = await User.findByIdAndUpdate(isTokenValid.userId, {
-      password: hasedPassword,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+      isTokenValid.userId,
+      {
+        password: hasedPassword,
+      },
+      { runValidators: true }
+    );
 
     res.status(200).json({ message: "Password reset successfully" });
     return;

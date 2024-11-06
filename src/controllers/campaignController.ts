@@ -55,7 +55,6 @@ export async function getACampaign(req: Request, res: Response) {
         description: campaign?.description,
         amountExpected: campaign?.amountExpected,
         currentAmount: campaign?.currentAmount,
-        status: campaign?.status,
         imageUrl: campaign?.imageUrl,
         category: campaign?.category,
         creator: campaign?.creator.name,
@@ -96,7 +95,6 @@ export async function createCampaign(req: Request, res: Response) {
         imageUrl: campaign?.imageUrl,
         creator: campaign?.creator,
         category: campaign?.category,
-        status: campaign?.status,
         contributors: campaign?.contributors,
         currentAmount: campaign?.currentAmount,
       },
@@ -115,7 +113,6 @@ export async function createCampaign(req: Request, res: Response) {
 
 export async function editCampaign(req: Request, res: Response) {
   const id = req.params.id;
-  const status = req.body.status;
   const user = req.user?.userId;
 
   try {
@@ -142,7 +139,7 @@ export async function editCampaign(req: Request, res: Response) {
   try {
     await Campaign.updateOne({ _id: id }, req.body, { runValidators: true });
 
-    res.status(204).json({
+    res.status(200).json({
       message: "updated campaign successfully",
     });
     return;
@@ -166,6 +163,7 @@ export async function deleteCampaing(req: Request, res: Response) {
   try {
     const campaign = await Campaign.findById({ _id: id });
     if (campaign?.creator?.toString() !== user) {
+      console.log("here");
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
@@ -180,7 +178,7 @@ export async function deleteCampaing(req: Request, res: Response) {
 
   try {
     await Campaign.deleteOne({ _id: id });
-    res.status(204);
+    res.status(200).json({ message: "deleted successfully" });
     return;
   } catch (error) {
     res.status(500).json({ message: "an error occured" });

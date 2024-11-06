@@ -22,11 +22,6 @@ const userSchema = new Schema(
         "Password must include uppercase, lowercase, number, and special character",
       ],
     },
-    phone: {
-      type: String,
-      required: [true, "Phone number is required"],
-      match: [/^0[0-9]{9}$/, "Phone number is invalid"],
-    },
   },
   { timestamps: true }
 );

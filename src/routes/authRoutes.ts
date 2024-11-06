@@ -22,6 +22,6 @@ authRoutes.post("/refresh-token", refreshToken);
 authRoutes.post("/forgot-password", forgotPassword);
 
 // set-password
-authRoutes.post("/set-password", setPassword);
+authRoutes.put("/set-password", setPassword);
 
 export default authRoutes;

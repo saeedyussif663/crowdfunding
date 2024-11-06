@@ -20,18 +20,18 @@ const campaignsSchema = new Schema(
     },
     contributors: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        name: { type: Schema.Types.ObjectId, ref: "User" },
         amount: { type: Number, required: true },
+        paid_at: { type: String, required: true },
+        method: {
+          type: String,
+          enum: {
+            values: ["card", "mobile_money"],
+            message: "method must be either 'card' or 'mobile_money' ",
+          },
+        },
       },
     ],
-    status: {
-      type: String,
-      enum: {
-        values: ["active", "completed", "cancelled"],
-        message: "Status must be either 'active', 'completed', or 'cancelled'",
-      },
-      default: "active",
-    },
     currentAmount: {
       type: Number,
       default: 0,
@@ -39,6 +39,11 @@ const campaignsSchema = new Schema(
     },
     category: {
       type: String,
+      enum: {
+        values: ["technology", "healthcare", "sports", "education"],
+        message:
+          "category must be either 'technology', 'healthcare', 'sports', 'education'",
+      },
       required: [true, "Category is required"],
     },
   },
