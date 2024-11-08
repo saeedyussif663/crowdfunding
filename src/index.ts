@@ -6,13 +6,18 @@ import isAuthenticated from "./middleware/isAuthenticated";
 import { User } from "./models/usersModel";
 import campaignRoutes from "./routes/campaignRoutes";
 import makePayments from "./lib/payment";
+import cors from "cors";
+import upload from "express-fileupload";
+import uploadImage from "./lib/upload";
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
+app.use(upload());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to the crowdfunding api");
@@ -23,6 +28,9 @@ app.use("/api/auth/", authRoutes);
 
 // campaigns route
 app.use("/api/campaign/", campaignRoutes);
+
+// upload image
+app.post("/api/upload", uploadImage);
 
 // get user - protected
 app.get(
@@ -41,6 +49,7 @@ app.get(
 // make payments
 app.post("/api/donate/:id", isAuthenticated, makePayments);
 
+// payment success webhook
 // app.post("/my/webhook", function (req, res) {
 //   const eventStatus = req.body.event;
 

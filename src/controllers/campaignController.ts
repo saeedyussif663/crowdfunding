@@ -115,6 +115,8 @@ export async function editCampaign(req: Request, res: Response) {
   const id = req.params.id;
   const user = req.user?.userId;
 
+  const { title, description, amountExpected, imageUrl, category } = req.body;
+
   try {
     const campaign = await Campaign.findOne({ _id: id });
 
@@ -137,7 +139,11 @@ export async function editCampaign(req: Request, res: Response) {
   }
 
   try {
-    await Campaign.updateOne({ _id: id }, req.body, { runValidators: true });
+    await Campaign.updateOne(
+      { _id: id },
+      { title, description, amountExpected, imageUrl, category },
+      { runValidators: true }
+    );
 
     res.status(200).json({
       message: "updated campaign successfully",
