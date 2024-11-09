@@ -37,8 +37,7 @@ export default async function makePayments(req: Request, res: Response) {
       }
     );
 
-    console.log(data.data.authorization_url);
-    res.redirect(data.data.authorization_url);
+    res.status(200).json({ url: data.data.authorization_url });
   } catch (error: any) {
     if (error.name === "CastError") {
       res.status(404).json({ message: "campaign not found" });
@@ -47,28 +46,6 @@ export default async function makePayments(req: Request, res: Response) {
     res.status(500).json({ message: "An error occured" });
     return;
   }
-
-  //   try {
-  //     const response = await axios.post(
-  //       `${process.env.PAYSTACK_BASE_URL}/transaction/initialize`,
-  //       {
-  //         email: "saaed@test.com",
-  //         amount: amount,
-  //         currency: "GHS",
-  //         metadata: { eventId: "1" },
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${process.env.PAYSTACK_KEY}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     console.log(response.data);
-  //   } catch (error: any) {
-  //     res.status(500).json({ message: error.message });
-  //   }
 
   res.status(200);
 }

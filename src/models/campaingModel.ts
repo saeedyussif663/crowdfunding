@@ -35,7 +35,6 @@ const campaignsSchema = new Schema(
     currentAmount: {
       type: Number,
       default: 0,
-      immutable: true,
     },
     category: {
       type: String,

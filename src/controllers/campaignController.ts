@@ -19,20 +19,35 @@ interface ICampaign extends Document {
 }
 
 export async function getAllCampaigns(req: Request, res: Response) {
+  const filter: { category?: string } = {};
+
+  const category = req.query.category as string;
+  const limit = req.query.limit as string;
+  const sortby = req.query.sortby as string;
+
+  const sortOrder = sortby === "asc" ? 1 : sortby === "desc" ? -1 : undefined;
+
+  if (category) filter.category = category;
+
   try {
-    const campaigns = await Campaign.find({})
+    const campaigns = await Campaign.find(filter)
+      .sort(sortOrder ? { amountExpected: sortOrder } : {})
       .populate({
         path: "creator",
         select: "name -_id",
       })
       .populate({
-        path: "contributors.user",
+        path: "contributors.name",
         select: "name -_id",
-      });
+      })
+      .select("-__v")
+      .limit(+limit);
+
     res.status(200).json({ message: "successfull", data: campaigns });
     return;
   } catch (error) {
     res.status(500).json({ message: "an error occured" });
+
     return;
   }
 }
@@ -45,7 +60,7 @@ export async function getACampaign(req: Request, res: Response) {
         path: "creator",
         select: "name -_id",
       })
-      .populate({ path: "contributors.user", select: "name" });
+      .populate({ path: "contributors.name", select: "name" });
 
     res.status(200).json({
       message: "successful",
