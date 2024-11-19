@@ -44,7 +44,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const usersModel_1 = require("../models/usersModel");
-const sendEmail_1 = __importDefault(require("../lib/sendEmail"));
+const sendEmail_1 = require("../lib/sendEmail");
 dotenv_1.default.config();
 const accesstoken_secret = process.env.ACCESS_TOKEN_SECRET;
 const accesstoken_duration = process.env.ACCESS_TOKEN_DURATION;
@@ -78,7 +78,7 @@ function signup(req, res) {
                     email: newUser.email,
                 },
             });
-            (0, sendEmail_1.default)(newUser.name, newUser.email);
+            yield (0, sendEmail_1.sendEmail)(newUser.name, newUser.email);
             return;
         }
         catch (error) {

@@ -23,12 +23,10 @@ const payment_1 = __importDefault(require("./lib/payment"));
 const cors_1 = __importDefault(require("cors"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const upload_1 = __importDefault(require("./lib/upload"));
-const crypto_1 = __importDefault(require("crypto"));
-const campaingModel_1 = __importDefault(require("./models/campaingModel"));
+const webhook_1 = require("./lib/webhook");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
-const secret = process.env.PAYSTACK_KEY;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use((0, express_fileupload_1.default)());
@@ -54,50 +52,7 @@ app.get("/api/user/me", isAuthenticated_1.default, (req, res) => __awaiter(void 
 // make payments
 app.post("/api/donate/:id", isAuthenticated_1.default, payment_1.default);
 // payment success webhook
-app.post("/webhook", function (req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const hash = crypto_1.default
-            .createHmac("sha512", secret)
-            .update(JSON.stringify(req.body))
-            .digest("hex");
-        if (hash == req.headers["x-paystack-signature"]) {
-            const eventStatus = req.body.event;
-            const event = req.body;
-            if (eventStatus === "charge.success") {
-                const event = req.body.data;
-                const { metadata } = event;
-                const { userId, eventId } = metadata;
-                const contributor = {
-                    name: userId,
-                    amount: event.amount / 100,
-                    paid_at: event.paid_at,
-                    method: event.channel,
-                };
-                try {
-                    const campaign = yield campaingModel_1.default.findOne({ _id: eventId });
-                    if (campaign) {
-                        const newCurrentAmount = (campaign === null || campaign === void 0 ? void 0 : campaign.currentAmount) + contributor.amount;
-                        yield campaingModel_1.default.updateOne({ _id: eventId }, {
-                            $push: { contributors: contributor },
-                            $set: { currentAmount: newCurrentAmount },
-                        }, { new: true });
-                    }
-                    res.status(404).json({ message: "campaign not found" });
-                    return;
-                }
-                catch (error) {
-                    if (error.name === "CastError") {
-                        res.status(404).json({ message: "campaign not found" });
-                        return;
-                    }
-                    res.status(500).json({ message: "An error occured" });
-                    return;
-                }
-            }
-        }
-        res.status(200).json({ message: "payment successfull" });
-    });
-});
+app.post("/webhook", webhook_1.paymentWebook);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
     (0, db_connection_1.DBconnect)();

@@ -35,10 +35,12 @@ export async function getAllCampaigns(req: Request, res: Response) {
       .populate({
         path: "creator",
         select: "name -_id",
+        transform: (doc) => doc.name,
       })
       .populate({
         path: "contributors.name",
         select: "name -_id",
+        transform: (doc) => doc.name,
       })
       .select("-__v")
       .limit(+limit);

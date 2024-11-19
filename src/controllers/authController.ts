@@ -7,7 +7,7 @@ import jwt, {
 } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { User } from "../models/usersModel";
-import sendEmail from "../lib/sendEmail";
+import { sendEmail } from "../lib/sendEmail";
 
 dotenv.config();
 const accesstoken_secret = process.env.ACCESS_TOKEN_SECRET as string;
@@ -49,7 +49,7 @@ export async function signup(req: Request, res: Response) {
       },
     });
 
-    sendEmail(newUser.name, newUser.email);
+    await sendEmail(newUser.name, newUser.email);
 
     return;
   } catch (error: any) {
