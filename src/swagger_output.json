@@ -3,7 +3,7 @@
   "info": {
     "version": "v1.0.0",
     "title": "Crowdfuning api",
-    "description": "Implementation of Swagger with TypeScript"
+    "description": "Crowdfunding Backend"
   },
   "servers": [
     {

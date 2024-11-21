@@ -44,7 +44,6 @@ function paymentWebook(req, res) {
                         res.status(404).json({ message: "campaign not found" });
                         return;
                     }
-                    console.log(user);
                     if (!user) {
                         return;
                     }

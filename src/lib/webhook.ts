@@ -37,8 +37,6 @@ export async function paymentWebook(req: Request, res: Response) {
           return;
         }
 
-        console.log(user);
-
         if (!user) {
           return;
         }
