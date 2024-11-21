@@ -14,7 +14,7 @@ const campaignRoutes = Router();
 campaignRoutes.get("/", getAllCampaigns);
 
 // get a campaign
-campaignRoutes.get("/:id", isAuthenticated, getACampaign);
+campaignRoutes.get("/:id", getACampaign);
 
 // create a campaign
 campaignRoutes.post("/create", isAuthenticated, createCampaign);

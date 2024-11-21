@@ -9,11 +9,9 @@ import makePayments from "./lib/payment";
 import cors from "cors";
 import upload from "express-fileupload";
 import uploadImage from "./lib/upload";
-import crypto from "crypto";
-import Campaign from "./models/campaingModel";
-import swaggerUI from "swagger-ui-express";
-import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 import { paymentWebook } from "./lib/webhook";
+import swaggerOutput from "./swagger_output.json";
 
 dotenv.config();
 
@@ -22,7 +20,10 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(upload());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to the crowdfunding api");

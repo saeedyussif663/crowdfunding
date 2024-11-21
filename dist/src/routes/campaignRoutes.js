@@ -10,7 +10,7 @@ const campaignRoutes = (0, express_1.Router)();
 // get all campaigns
 campaignRoutes.get("/", campaignController_1.getAllCampaigns);
 // get a campaign
-campaignRoutes.get("/:id", isAuthenticated_1.default, campaignController_1.getACampaign);
+campaignRoutes.get("/:id", campaignController_1.getACampaign);
 // create a campaign
 campaignRoutes.post("/create", isAuthenticated_1.default, campaignController_1.createCampaign);
 // edit a campaign

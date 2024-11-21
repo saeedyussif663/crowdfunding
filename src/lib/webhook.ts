@@ -2,6 +2,7 @@ import crypto from "crypto";
 import Campaign from "../models/campaingModel";
 import { Request, Response } from "express";
 import { paymentSuccessEmail } from "./sendEmail";
+import { User } from "../models/usersModel";
 
 const secret = process.env.PAYSTACK_KEY as string;
 
@@ -24,14 +25,21 @@ export async function paymentWebook(req: Request, res: Response) {
         paid_at: event.paid_at,
         method: event.channel,
       };
-      console.log(contributor);
+
       res.status(200);
 
       try {
+        const user = await User.findOne({ _id: userId });
         const campaign = await Campaign.findOne({ _id: eventId });
 
         if (!campaign) {
           res.status(404).json({ message: "campaign not found" });
+          return;
+        }
+
+        console.log(user);
+
+        if (!user) {
           return;
         }
 
@@ -47,11 +55,11 @@ export async function paymentWebook(req: Request, res: Response) {
         );
 
         await paymentSuccessEmail(
-          "helo",
+          user.name,
           contributor.amount,
           campaign.title,
           contributor.paid_at,
-          "saeedyussif663@gmail.com"
+          user?.email
         );
 
         res.status(200).json({ message: "sent" });

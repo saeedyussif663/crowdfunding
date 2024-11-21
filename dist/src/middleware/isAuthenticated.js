@@ -32,7 +32,8 @@ const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 dotenv_1.default.config();
 const accesstoken_secret = process.env.ACCESS_TOKEN_SECRET;
 function isAuthenticated(req, res, next) {
-    const token = req.headers.authorization;
+    var _a;
+    const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
     if (!token) {
         res.status(401).json({ message: "Unauthorize" });
         return;

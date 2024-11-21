@@ -16,6 +16,7 @@ exports.paymentWebook = paymentWebook;
 const crypto_1 = __importDefault(require("crypto"));
 const campaingModel_1 = __importDefault(require("../models/campaingModel"));
 const sendEmail_1 = require("./sendEmail");
+const usersModel_1 = require("../models/usersModel");
 const secret = process.env.PAYSTACK_KEY;
 function paymentWebook(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -35,12 +36,16 @@ function paymentWebook(req, res) {
                     paid_at: event.paid_at,
                     method: event.channel,
                 };
-                console.log(contributor);
                 res.status(200);
                 try {
+                    const user = yield usersModel_1.User.findOne({ _id: userId });
                     const campaign = yield campaingModel_1.default.findOne({ _id: eventId });
                     if (!campaign) {
                         res.status(404).json({ message: "campaign not found" });
+                        return;
+                    }
+                    console.log(user);
+                    if (!user) {
                         return;
                     }
                     const newCurrentAmount = (campaign === null || campaign === void 0 ? void 0 : campaign.currentAmount) + contributor.amount;
@@ -48,7 +53,7 @@ function paymentWebook(req, res) {
                         $push: { contributors: contributor },
                         $set: { currentAmount: newCurrentAmount },
                     }, { new: true });
-                    yield (0, sendEmail_1.paymentSuccessEmail)("helo", contributor.amount, campaign.title, contributor.paid_at, "saeedyussif663@gmail.com");
+                    yield (0, sendEmail_1.paymentSuccessEmail)(user.name, contributor.amount, campaign.title, contributor.paid_at, user === null || user === void 0 ? void 0 : user.email);
                     res.status(200).json({ message: "sent" });
                     return;
                 }

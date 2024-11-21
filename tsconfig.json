@@ -5,9 +5,11 @@
     "module": "commonjs",
     "rootDir": "./",
     "outDir": "./dist",
-    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/swagger-output.json", "src/**/*"]
 }

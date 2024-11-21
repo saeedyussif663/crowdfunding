@@ -61,6 +61,10 @@ function getACampaign(req, res) {
                 select: "name -_id",
             })
                 .populate({ path: "contributors.name", select: "name" });
+            if (!campaign) {
+                res.status(404).json({ message: "campaign not found" });
+                return;
+            }
             res.status(200).json({
                 message: "successful",
                 data: {
