@@ -273,14 +273,16 @@
             "name": "limit",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": ["asc", "desc"]
             }
           },
           {
             "name": "sortby",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": ["technology", "healthcare", "sports", "education"]
             }
           }
         ],
